@@ -127,14 +127,9 @@ class AwqQuantizer:
         for i in tqdm(range(len(self.modules)), desc="AWQ"):
             # Move module and inputs to correct device
             common_device = next(self.modules[i].parameters()).device
-            if common_device is None or str(common_device) == "cpu":
-                if torch.cuda.is_available():
-                    best_device = "cuda:" + str(i % torch.cuda.device_count())
-                else:
-                    best_device = get_best_device()
+            best_device = get_best_device()
 
-                self.modules[i] = self.modules[i].to(best_device)
-                common_device = next(self.modules[i].parameters()).device
+            self.modules[i] = self.modules[i].to(best_device)
 
             if self.module_kwargs.get("position_ids") is not None:
                 self.module_kwargs["position_ids"] = self.module_kwargs[
